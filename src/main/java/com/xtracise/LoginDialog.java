@@ -85,6 +85,26 @@ public class LoginDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // public method to get authentication state, placeholder for initial purpose only
+    private boolean successful = false;
+    public boolean isSuccessful() {
+        return successful;
+    }
+
+    // temporarily login is just a simple function that validates one credential set
+    private void jbLoginPressed(java.awt.event.ActionEvent evt) {                                         
+        String email = jtfEmail.getText();
+        String password = new String(jpfPassword.getPassword());
+        
+        if (email.equals("test@test.com") && password.equals("test")) {
+            successful = true;
+            dispose();
+        } else {
+            successful = false;
+            dispose();
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -126,6 +146,7 @@ public class LoginDialog extends javax.swing.JDialog {
             }
         });
     }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jbLogin;
