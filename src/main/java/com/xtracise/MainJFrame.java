@@ -26,17 +26,44 @@ public class MainJFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jlCompanyLogo = new javax.swing.JLabel();
+        jlCompanyWebsite = new javax.swing.JLabel();
+        jbLogin = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jlCompanyLogo.setText("CompanyLogo");
+
+        jlCompanyWebsite.setText("Website");
+
+        jbLogin.setText("Press to login!");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addComponent(jlCompanyLogo)
+                        .addGap(18, 18, 18)
+                        .addComponent(jlCompanyWebsite))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(141, 141, 141)
+                        .addComponent(jbLogin)))
+                .addContainerGap(142, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jlCompanyLogo)
+                    .addComponent(jlCompanyWebsite))
+                .addGap(111, 111, 111)
+                .addComponent(jbLogin)
+                .addContainerGap(125, Short.MAX_VALUE))
         );
 
         pack();
@@ -79,5 +106,8 @@ public class MainJFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jbLogin;
+    private javax.swing.JLabel jlCompanyLogo;
+    private javax.swing.JLabel jlCompanyWebsite;
     // End of variables declaration//GEN-END:variables
 }
