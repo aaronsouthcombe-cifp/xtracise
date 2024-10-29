@@ -32,9 +32,9 @@
                           <Component id="jlEmail" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jtfEmail" min="-2" max="-2" attributes="0"/>
-                          <Component id="jpfPassword" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="jtfEmail" max="32767" attributes="0"/>
+                          <Component id="jpfPassword" pref="110" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
@@ -42,7 +42,7 @@
                       <Component id="jbLogin" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="129" max="32767" attributes="0"/>
+              <EmptySpace pref="109" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -73,9 +73,6 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jtfEmail">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Email"/>
-      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jlPassword">
       <Properties>
@@ -83,14 +80,17 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JPasswordField" name="jpfPassword">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="jPasswordField1"/>
-      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jpfPasswordActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="jbLogin">
       <Properties>
         <Property name="text" type="java.lang.String" value="Login"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbLoginActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

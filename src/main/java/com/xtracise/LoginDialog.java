@@ -38,13 +38,20 @@ public class LoginDialog extends javax.swing.JDialog {
 
         jlEmail.setText("Email:");
 
-        jtfEmail.setText("Email");
-
         jlPassword.setText("Password:");
 
-        jpfPassword.setText("jPasswordField1");
+        jpfPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jpfPasswordActionPerformed(evt);
+            }
+        });
 
         jbLogin.setText("Login");
+        jbLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbLoginActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -58,13 +65,13 @@ public class LoginDialog extends javax.swing.JDialog {
                             .addComponent(jlPassword)
                             .addComponent(jlEmail))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jtfEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jpfPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jtfEmail)
+                            .addComponent(jpfPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(144, 144, 144)
                         .addComponent(jbLogin)))
-                .addContainerGap(129, Short.MAX_VALUE))
+                .addContainerGap(109, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -85,14 +92,15 @@ public class LoginDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
     // public method to get authentication state, placeholder for initial purpose only
     private boolean successful = false;
     public boolean isSuccessful() {
         return successful;
     }
-
+    
     // temporarily login is just a simple function that validates one credential set
-    private void jbLoginPressed(java.awt.event.ActionEvent evt) {                                         
+    private void jbLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbLoginActionPerformed
         String email = jtfEmail.getText();
         String password = new String(jpfPassword.getPassword());
         
@@ -102,9 +110,12 @@ public class LoginDialog extends javax.swing.JDialog {
         } else {
             successful = false;
             dispose();
-        }
-    }
-    
+        }    }//GEN-LAST:event_jbLoginActionPerformed
+
+    private void jpfPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jpfPasswordActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jpfPasswordActionPerformed
+
     /**
      * @param args the command line arguments
      */

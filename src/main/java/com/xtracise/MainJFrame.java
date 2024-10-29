@@ -4,6 +4,8 @@
  */
 package com.xtracise;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author aaron
@@ -31,12 +33,18 @@ public class MainJFrame extends javax.swing.JFrame {
         jbLogin = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jlCompanyLogo.setText("CompanyLogo");
 
         jlCompanyWebsite.setText("Website");
 
         jbLogin.setText("Press to login!");
+        jbLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbLoginActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -68,6 +76,34 @@ public class MainJFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private boolean isLoggedIn = false;
+    private void jbLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbLoginActionPerformed
+        if (!isLoggedIn) {
+            LoginDialog loginDialog = new LoginDialog(this, true);
+            loginDialog.setLocationRelativeTo(this);
+            loginDialog.setVisible(true);
+
+            if (loginDialog.isSuccessful()) {
+                isLoggedIn = true;
+                JOptionPane.showMessageDialog(this,
+                        "Login successful!",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                jbLogin.setText("Logout");
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Login failed!",
+                        "Try again",
+                        JOptionPane.INFORMATION_MESSAGE);
+                loginDialog.setLocationRelativeTo(this);
+                loginDialog.setVisible(true);
+            }
+        } else {
+            isLoggedIn = false;
+            jbLogin.setText("Login");
+        }
+    }//GEN-LAST:event_jbLoginActionPerformed
 
     /**
      * @param args the command line arguments
