@@ -1,15 +1,20 @@
 package com.xtracise;
 
+import javax.swing.JOptionPane;
+import at.favre.lib.crypto.bcrypt.BCrypt;
+import java.nio.charset.StandardCharsets;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
-
 /**
  *
  * @author aaron
  */
 public class LoginDialog extends javax.swing.JDialog {
+
+    private static final BCrypt.Verifyer verifyer = BCrypt.verifyer();
 
     /**
      * Creates new form LoginDialog
@@ -92,29 +97,67 @@ public class LoginDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
     // public method to get authentication state, placeholder for initial purpose only
     private boolean successful = false;
+
     public boolean isSuccessful() {
         return successful;
     }
-    
+
     // temporarily login is just a simple function that validates one credential set
-    private void jbLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbLoginActionPerformed
+    private void jbLoginActionPerformed(java.awt.event.ActionEvent evt) {
         String email = jtfEmail.getText();
         String password = new String(jpfPassword.getPassword());
-        
-        if (email.equals("test@test.com") && password.equals("test")) {
-            successful = true;
-            dispose();
-        } else {
-            successful = false;
-            dispose();
-        }    }//GEN-LAST:event_jbLoginActionPerformed
 
-    private void jpfPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jpfPasswordActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jpfPasswordActionPerformed
+        try {
+            Usuari user = DataAccess.getUser(email);
+
+            if (user != null && validatePassword(password, user.getPasswordHash())) {
+                successful = true;
+                dispose();
+            } else {
+                successful = false;
+                JOptionPane.showMessageDialog(this,
+                        "Invalid email or password",
+                        "Login failed",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                jpfPassword.setText("");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "An error ocurred. Please try again or contact the software provider.",
+                    "Login error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+
+    }
+
+    private boolean validatePassword(String password, String passHash) {
+
+        try {
+            BCrypt.Result result = verifyer.verify(
+                    password.getBytes(StandardCharsets.UTF_8),
+                    passHash.getBytes(StandardCharsets.UTF_8)
+            );
+            return result.verified;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    public static String hashPassword(String plainTextPassword) {
+        return new String(
+                BCrypt.withDefaults().hash(
+                        12,
+                        plainTextPassword.getBytes(StandardCharsets.UTF_8)
+                ),
+                StandardCharsets.UTF_8
+        );
+    }
 
     /**
      * @param args the command line arguments
@@ -157,7 +200,7 @@ public class LoginDialog extends javax.swing.JDialog {
             }
         });
     }
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jbLogin;
