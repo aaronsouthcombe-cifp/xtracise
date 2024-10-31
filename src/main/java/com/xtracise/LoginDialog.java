@@ -1,8 +1,10 @@
 package com.xtracise;
 
+import com.xtracise.models.Usuari;
 import javax.swing.JOptionPane;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -36,20 +38,14 @@ public class LoginDialog extends javax.swing.JDialog {
         jlEmail = new javax.swing.JLabel();
         jtfEmail = new javax.swing.JTextField();
         jlPassword = new javax.swing.JLabel();
-        jpfPassword = new javax.swing.JPasswordField();
         jbLogin = new javax.swing.JButton();
+        jpfPassword = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jlEmail.setText("Email:");
 
         jlPassword.setText("Password:");
-
-        jpfPassword.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jpfPasswordActionPerformed(evt);
-            }
-        });
 
         jbLogin.setText("Login");
         jbLogin.addActionListener(new java.awt.event.ActionListener() {
@@ -71,8 +67,8 @@ public class LoginDialog extends javax.swing.JDialog {
                             .addComponent(jlEmail))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jtfEmail)
-                            .addComponent(jpfPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)))
+                            .addComponent(jtfEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                            .addComponent(jpfPassword)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(144, 144, 144)
                         .addComponent(jbLogin)))
@@ -86,12 +82,12 @@ public class LoginDialog extends javax.swing.JDialog {
                     .addComponent(jlEmail)
                     .addComponent(jtfEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlPassword)
                     .addComponent(jpfPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(21, 21, 21)
                 .addComponent(jbLogin)
-                .addContainerGap(86, Short.MAX_VALUE))
+                .addContainerGap(83, Short.MAX_VALUE))
         );
 
         pack();

@@ -61,6 +61,7 @@ public class DataAccess {
         try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
 
             ResultSet resultSet = selectStatement.executeQuery();
+            
 
             while (resultSet.next()) {
                 Usuari user = new Usuari();
