@@ -19,6 +19,10 @@ public class Usuari {
     public Usuari() {
     }
     
+    public String toString() {
+        return nom + " " + email;
+    }
+    
     public int getId() {
         return id;
     }

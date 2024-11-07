@@ -17,6 +17,11 @@ import java.util.ArrayList;
 public class LoginDialog extends javax.swing.JDialog {
 
     private static final BCrypt.Verifyer verifyer = BCrypt.verifyer();
+    private Usuari loggedInUser = null;
+    
+    public Usuari getLoggedInUser() {
+        return loggedInUser;
+    }
 
     /**
      * Creates new form LoginDialog
@@ -110,6 +115,7 @@ public class LoginDialog extends javax.swing.JDialog {
 
             if (user != null && validatePassword(password, user.getPasswordHash())) {
                 successful = true;
+                loggedInUser = user;
                 dispose();
             } else {
                 successful = false;
@@ -121,6 +127,7 @@ public class LoginDialog extends javax.swing.JDialog {
                 jpfPassword.setText("");
             }
         } catch (Exception e) {
+            loggedInUser = null;
             JOptionPane.showMessageDialog(this,
                     "An error ocurred. Please try again or contact the software provider.",
                     "Login error",
