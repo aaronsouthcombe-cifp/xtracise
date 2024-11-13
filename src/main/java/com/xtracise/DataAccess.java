@@ -251,4 +251,17 @@ public class DataAccess {
         }
         return 0;
     }
+    
+    public static void deleteWorkout(int workoutId) {
+        String sql = "DELETE FROM dbo.ExercicisWorkouts WHERE IdWorkout=?; " +
+                     "DELETE FROM dbo.Workouts WHERE Id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, workoutId);
+            stmt.setInt(2, workoutId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

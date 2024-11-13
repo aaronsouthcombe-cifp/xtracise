@@ -33,6 +33,8 @@ public class MainJFrame extends javax.swing.JFrame {
         jspSplitPane.setVisible(false);
         jbCreateWorkout.setVisible(false);
         jScrollPane2.setVisible(false);
+        jbEditWorkout.setVisible(false);
+        jbDeleteWorkout.setVisible(false);
     }
 
     /**
@@ -55,6 +57,8 @@ public class MainJFrame extends javax.swing.JFrame {
         jbCreateWorkout = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jlWorkoutExercises = new javax.swing.JList<>();
+        jbEditWorkout = new javax.swing.JButton();
+        jbDeleteWorkout = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -104,6 +108,20 @@ public class MainJFrame extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(jlWorkoutExercises);
 
+        jbEditWorkout.setText("Edit Workout");
+        jbEditWorkout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbEditWorkoutActionPerformed(evt);
+            }
+        });
+
+        jbDeleteWorkout.setText("Delete Workout");
+        jbDeleteWorkout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbDeleteWorkoutActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -123,9 +141,13 @@ public class MainJFrame extends javax.swing.JFrame {
                         .addComponent(jlCompanyWebsite))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(419, 419, 419)
-                        .addComponent(jbLogin)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jbEditWorkout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jbLogin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jbCreateWorkout)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jbCreateWorkout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jbDeleteWorkout, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -143,7 +165,11 @@ public class MainJFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbLogin)
                     .addComponent(jbCreateWorkout))
-                .addGap(81, 81, 81))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jbEditWorkout)
+                    .addComponent(jbDeleteWorkout))
+                .addGap(50, 50, 50))
         );
 
         pack();
@@ -239,6 +265,8 @@ public class MainJFrame extends javax.swing.JFrame {
                         "Success",
                         JOptionPane.INFORMATION_MESSAGE);
                 jbLogin.setText("Logout");
+                jbEditWorkout.setVisible(currentUser.isInstructor());
+                jbDeleteWorkout.setVisible(currentUser.isInstructor());
                 jbCreateWorkout.setVisible(currentUser.isInstructor());
             } else {
                 JOptionPane.showMessageDialog(this,
@@ -257,18 +285,19 @@ public class MainJFrame extends javax.swing.JFrame {
             isLoggedIn = false;
             jbLogin.setText("Login");
             jbCreateWorkout.setVisible(false);
+            jbEditWorkout.setVisible(false);
+            jbDeleteWorkout.setVisible(false);
         }
     }//GEN-LAST:event_jbLoginActionPerformed
 
     private void jbCreateWorkoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCreateWorkoutActionPerformed
-        // TODO add your handling code here:
         Usuari selectedUser = jlUsers.getSelectedValue();
         if (selectedUser != null) {
             CreateWorkoutDialog dialog = new CreateWorkoutDialog(this, true, selectedUser);
             dialog.setVisible(true);
 
             if (dialog.isSuccessful()) {
-                // Refresh the workouts table
+                // Refresh the workouts table so they show up
                 loadWorkoutsForUser(selectedUser);
             }
         } else {
@@ -278,6 +307,63 @@ public class MainJFrame extends javax.swing.JFrame {
                     JOptionPane.WARNING_MESSAGE);
         }
     }//GEN-LAST:event_jbCreateWorkoutActionPerformed
+
+    // worst code i've ever written... deletes and creates in one go to "edit"
+    private void jbEditWorkoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbEditWorkoutActionPerformed
+         int row = jTable1.getSelectedRow();
+        if (row >= 0) {
+            Usuari selectedUser = jlUsers.getSelectedValue();
+            String date = (String) jTable1.getValueAt(row, 0);
+
+            ArrayList<Workout> workouts = DataAccess.getWorkoutsPerUser(selectedUser);
+            workouts.stream()
+                   .filter(w -> w.getForDate().equals(date))
+                   .findFirst()
+                   .ifPresent(w -> {
+                        // delete the old workout
+                        DataAccess.deleteWorkout(w.getId());
+
+                        // create new workout
+                        CreateWorkoutDialog dialog = new CreateWorkoutDialog(this, true, selectedUser);
+                        dialog.setVisible(true);
+
+                        // magic! workout "edited"
+                        loadWorkoutsForUser(selectedUser);
+                   });
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "Please select a workout to edit",
+                "No workout selected",
+                JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_jbEditWorkoutActionPerformed
+
+    private void jbDeleteWorkoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbDeleteWorkoutActionPerformed
+        int row = jTable1.getSelectedRow();
+        if (row >= 0) {
+            // add confirmation. not done in edit for obvious reasons...
+            if (JOptionPane.showConfirmDialog(this, "Delete this workout?", 
+                "Confirm Delete", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+
+                Usuari selectedUser = jlUsers.getSelectedValue();
+                String date = (String) jTable1.getValueAt(row, 0);
+                ArrayList<Workout> workouts = DataAccess.getWorkoutsPerUser(selectedUser);
+
+                workouts.stream()
+                       .filter(w -> w.getForDate().equals(date))
+                       .findFirst()
+                       .ifPresent(w -> {
+                            DataAccess.deleteWorkout(w.getId());
+                            loadWorkoutsForUser(selectedUser);
+                       });
+            }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "Please select a workout to delete",
+                "No workout selected",
+                JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_jbDeleteWorkoutActionPerformed
 
     
     private void setupExercisesList() {
@@ -367,6 +453,8 @@ public class MainJFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JButton jbCreateWorkout;
+    private javax.swing.JButton jbDeleteWorkout;
+    private javax.swing.JButton jbEditWorkout;
     private javax.swing.JButton jbLogin;
     private javax.swing.JLabel jlCompanyLogo;
     private javax.swing.JLabel jlCompanyWebsite;

@@ -41,9 +41,15 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="419" max="-2" attributes="0"/>
-                      <Component id="jbLogin" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="jbEditWorkout" max="32767" attributes="0"/>
+                          <Component id="jbLogin" max="32767" attributes="0"/>
+                      </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jbCreateWorkout" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="jbCreateWorkout" max="32767" attributes="0"/>
+                          <Component id="jbDeleteWorkout" max="32767" attributes="0"/>
+                      </Group>
                   </Group>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
@@ -68,7 +74,12 @@
                   <Component id="jbLogin" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jbCreateWorkout" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="81" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jbEditWorkout" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jbDeleteWorkout" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -169,5 +180,21 @@
         </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JButton" name="jbEditWorkout">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Edit Workout"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbEditWorkoutActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="jbDeleteWorkout">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Delete Workout"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbDeleteWorkoutActionPerformed"/>
+      </Events>
+    </Component>
   </SubComponents>
 </Form>
