@@ -18,6 +18,10 @@ public class Exercici {
     }
     
     // Getters and setters
+    public String toString() {
+        return nomExercici + " - " + descripcio;
+    }
+    
     public int getId() {
         return id;
     }

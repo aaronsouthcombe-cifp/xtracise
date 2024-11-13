@@ -48,6 +48,8 @@ public class MainJFrame extends javax.swing.JFrame {
         jlUsers = new javax.swing.JList<>();
         jtWorkouts = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jpRightPanel = new javax.swing.JPanel();
+        jbCreateWorkout = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -63,6 +65,7 @@ public class MainJFrame extends javax.swing.JFrame {
             }
         });
 
+        jlUsers.setModel(new DefaultListModel<Usuari>());
         jScrollPane1.setViewportView(jlUsers);
 
         jspSplitPane.setLeftComponent(jScrollPane1);
@@ -82,10 +85,34 @@ public class MainJFrame extends javax.swing.JFrame {
 
         jspSplitPane.setRightComponent(jtWorkouts);
 
+        javax.swing.GroupLayout jpRightPanelLayout = new javax.swing.GroupLayout(jpRightPanel);
+        jpRightPanel.setLayout(jpRightPanelLayout);
+        jpRightPanelLayout.setHorizontalGroup(
+            jpRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+        jpRightPanelLayout.setVerticalGroup(
+            jpRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
+        jbCreateWorkout.setText("Create Workout");
+        jbCreateWorkout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbCreateWorkoutActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 101, Short.MAX_VALUE)
+                .addComponent(jspSplitPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(55, 55, 55)
+                .addComponent(jpRightPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(172, 172, 172))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -94,13 +121,11 @@ public class MainJFrame extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jlCompanyWebsite))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(499, 499, 499)
-                        .addComponent(jbLogin)))
+                        .addGap(419, 419, 419)
+                        .addComponent(jbLogin)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jbCreateWorkout)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 101, Short.MAX_VALUE)
-                .addComponent(jspSplitPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(327, 327, 327))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -109,10 +134,17 @@ public class MainJFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlCompanyLogo)
                     .addComponent(jlCompanyWebsite))
-                .addGap(41, 41, 41)
-                .addComponent(jspSplitPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(41, 41, 41)
+                        .addComponent(jspSplitPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(113, 113, 113)
+                        .addComponent(jpRightPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
-                .addComponent(jbLogin)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jbLogin)
+                    .addComponent(jbCreateWorkout))
                 .addGap(81, 81, 81))
         );
 
@@ -208,6 +240,7 @@ public class MainJFrame extends javax.swing.JFrame {
                         "Success",
                         JOptionPane.INFORMATION_MESSAGE);
                 jbLogin.setText("Logout");
+                jbCreateWorkout.setVisible(currentUser.isInstructor());
             } else {
                 JOptionPane.showMessageDialog(this,
                         "Login failed!",
@@ -223,8 +256,28 @@ public class MainJFrame extends javax.swing.JFrame {
             workoutTableModel.setRowCount(0);
             isLoggedIn = false;
             jbLogin.setText("Login");
+            jbCreateWorkout.setVisible(false);
         }
     }//GEN-LAST:event_jbLoginActionPerformed
+
+    private void jbCreateWorkoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCreateWorkoutActionPerformed
+        // TODO add your handling code here:
+        Usuari selectedUser = jlUsers.getSelectedValue();
+        if (selectedUser != null) {
+            CreateWorkoutDialog dialog = new CreateWorkoutDialog(this, true, selectedUser);
+            dialog.setVisible(true);
+
+            if (dialog.isSuccessful()) {
+                // Refresh the workouts table
+                loadWorkoutsForUser(selectedUser);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Please select a user first",
+                    "No user selected",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+    }//GEN-LAST:event_jbCreateWorkoutActionPerformed
 
     /**
      * @param args the command line arguments
@@ -265,10 +318,12 @@ public class MainJFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JButton jbCreateWorkout;
     private javax.swing.JButton jbLogin;
     private javax.swing.JLabel jlCompanyLogo;
     private javax.swing.JLabel jlCompanyWebsite;
     private javax.swing.JList<Usuari> jlUsers;
+    private javax.swing.JPanel jpRightPanel;
     private javax.swing.JSplitPane jspSplitPane;
     private javax.swing.JScrollPane jtWorkouts;
     // End of variables declaration//GEN-END:variables
