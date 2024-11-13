@@ -22,13 +22,17 @@ public class MainJFrame extends javax.swing.JFrame {
     private DefaultListModel<Usuari> userListModel;
     private DefaultTableModel workoutTableModel;
     private Usuari currentUser;
+    private DefaultListModel<Exercici> exercicisModel;
     /**
      * Creates new form NewJFrame
      */
     public MainJFrame() {
         initComponents();
         setupModels();
+        setupExercisesList();
         jspSplitPane.setVisible(false);
+        jbCreateWorkout.setVisible(false);
+        jScrollPane2.setVisible(false);
     }
 
     /**
@@ -48,8 +52,9 @@ public class MainJFrame extends javax.swing.JFrame {
         jlUsers = new javax.swing.JList<>();
         jtWorkouts = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jpRightPanel = new javax.swing.JPanel();
         jbCreateWorkout = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jlWorkoutExercises = new javax.swing.JList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -85,23 +90,19 @@ public class MainJFrame extends javax.swing.JFrame {
 
         jspSplitPane.setRightComponent(jtWorkouts);
 
-        javax.swing.GroupLayout jpRightPanelLayout = new javax.swing.GroupLayout(jpRightPanel);
-        jpRightPanel.setLayout(jpRightPanelLayout);
-        jpRightPanelLayout.setHorizontalGroup(
-            jpRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-        jpRightPanelLayout.setVerticalGroup(
-            jpRightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-
         jbCreateWorkout.setText("Create Workout");
         jbCreateWorkout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbCreateWorkoutActionPerformed(evt);
             }
         });
+
+        jlWorkoutExercises.setModel(new javax.swing.AbstractListModel<Exercici>() {
+            Exercici[] exercicis = { };
+            public int getSize() { return exercicis.length; }
+            public Exercici getElementAt(int i) { return exercicis[i]; }
+        });
+        jScrollPane2.setViewportView(jlWorkoutExercises);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -110,9 +111,9 @@ public class MainJFrame extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 101, Short.MAX_VALUE)
                 .addComponent(jspSplitPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(55, 55, 55)
-                .addComponent(jpRightPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(172, 172, 172))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(104, 104, 104))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -134,13 +135,10 @@ public class MainJFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlCompanyLogo)
                     .addComponent(jlCompanyWebsite))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(41, 41, 41)
-                        .addComponent(jspSplitPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(113, 113, 113)
-                        .addComponent(jpRightPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(41, 41, 41)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane2)
+                    .addComponent(jspSplitPane))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbLogin)
@@ -197,18 +195,18 @@ public class MainJFrame extends javax.swing.JFrame {
 
     private void loadWorkoutsForUser(Usuari user) {
         workoutTableModel.setRowCount(0);
+        exercicisModel.clear();
         ArrayList<Workout> workouts = DataAccess.getWorkoutsPerUser(user);
 
         for (Workout workout : workouts) {
             ArrayList<Exercici> exercicis = DataAccess.getExercicisPerWorkout(workout);
 
-            // format exercises for table
             StringBuilder exerciseNames = new StringBuilder();
             for (int i = 0; i < exercicis.size(); i++) {
                 if (i > 0) {
                     exerciseNames.append(", ");
                 }
-                exerciseNames.append(exercicis.get(i).getDescripcio()); // descripcio es el exercici en si
+                exerciseNames.append(exercicis.get(i).getDescripcio());
             }
 
             workoutTableModel.addRow(new Object[] {
@@ -233,6 +231,7 @@ public class MainJFrame extends javax.swing.JFrame {
                 isLoggedIn = true;
                 if (currentUser.isInstructor()) {
                     jspSplitPane.setVisible(true);
+                    jScrollPane2.setVisible(true);
                     loadUsersForInstructor();
                 }
                 JOptionPane.showMessageDialog(this,
@@ -254,6 +253,7 @@ public class MainJFrame extends javax.swing.JFrame {
             jspSplitPane.setVisible(false);
             userListModel.clear();
             workoutTableModel.setRowCount(0);
+            jScrollPane2.setVisible(false);
             isLoggedIn = false;
             jbLogin.setText("Login");
             jbCreateWorkout.setVisible(false);
@@ -279,6 +279,53 @@ public class MainJFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jbCreateWorkoutActionPerformed
 
+    
+    private void setupExercisesList() {
+        exercicisModel = new DefaultListModel<>();
+        jlWorkoutExercises.setModel(exercicisModel);
+
+        jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    int selectedRow = jTable1.getSelectedRow();
+                    if (selectedRow >= 0) {
+                        showExercisesForWorkout(selectedRow);
+                    } else {
+                        exercicisModel.clear();
+                    }
+                }
+            }
+        });
+    }
+    
+    private void showExercisesForWorkout(int selectedRow) {
+        exercicisModel.clear();
+        
+        // Get the workout date from the selected row
+        String workoutDate = (String) workoutTableModel.getValueAt(selectedRow, 0);
+        
+        // Get the currently selected user
+        Usuari selectedUser = jlUsers.getSelectedValue();
+        if (selectedUser != null) {
+            // Find the matching workout
+            ArrayList<Workout> workouts = DataAccess.getWorkoutsPerUser(selectedUser);
+            for (Workout workout : workouts) {
+                if (workout.getForDate().equals(workoutDate)) {
+                    // Get and display exercises for this workout
+                    ArrayList<Exercici> exercicis = DataAccess.getExercicisPerWorkout(workout);
+                    for (Exercici exercici : exercicis) {
+                        exercicisModel.addElement(exercici);
+                    }
+                    jScrollPane2.setVisible(true);
+                    break;
+                }
+            }
+        }
+    }
+
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -317,13 +364,14 @@ public class MainJFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JButton jbCreateWorkout;
     private javax.swing.JButton jbLogin;
     private javax.swing.JLabel jlCompanyLogo;
     private javax.swing.JLabel jlCompanyWebsite;
     private javax.swing.JList<Usuari> jlUsers;
-    private javax.swing.JPanel jpRightPanel;
+    private javax.swing.JList<Exercici> jlWorkoutExercises;
     private javax.swing.JSplitPane jspSplitPane;
     private javax.swing.JScrollPane jtWorkouts;
     // End of variables declaration//GEN-END:variables
