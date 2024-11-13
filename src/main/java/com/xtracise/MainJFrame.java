@@ -23,6 +23,7 @@ public class MainJFrame extends javax.swing.JFrame {
     private DefaultTableModel workoutTableModel;
     private Usuari currentUser;
     private DefaultListModel<Exercici> exercicisModel;
+    private boolean isLoggedIn = false;
     /**
      * Creates new form NewJFrame
      */
@@ -245,7 +246,6 @@ public class MainJFrame extends javax.swing.JFrame {
     } 
     
     
-    private boolean isLoggedIn = false;
     private void jbLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbLoginActionPerformed
         if (!isLoggedIn) {
             LoginDialog loginDialog = new LoginDialog(this, true);
