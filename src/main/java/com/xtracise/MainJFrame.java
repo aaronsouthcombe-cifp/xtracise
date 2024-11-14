@@ -13,6 +13,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
+import javax.swing.ImageIcon;
+import java.awt.Image;
+import java.awt.Cursor;
+import java.awt.Desktop;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.URI;
 /**
  *
  * @author aaron
@@ -29,6 +36,26 @@ public class MainJFrame extends javax.swing.JFrame {
      */
     public MainJFrame() {
         initComponents();
+        try {
+            ImageIcon icon = new ImageIcon("src/main/resources/gym.jpg");
+            Image image = icon.getImage().getScaledInstance(200, 100, Image.SCALE_SMOOTH); // Using fixed size since component size might not be set yet
+            jlCompanyLogo.setIcon(new ImageIcon(image));
+            jlCompanyLogo.setText("");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        jlCompanyWebsite.setText("<html><a href='http://xtracise.example.com'>Xtracise</a></html>");
+        jlCompanyWebsite.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        jlCompanyWebsite.addMouseListener(new MouseAdapter() {
+           @Override
+           public void mouseClicked(MouseEvent e) {
+               try {
+                   Desktop.getDesktop().browse(new URI("http://xtracise.example.com"));
+               } catch (Exception ex) {
+                   ex.printStackTrace();
+               }
+           }
+        });
         setupModels();
         setupExercisesList();
         jspSplitPane.setVisible(false);
@@ -66,6 +93,7 @@ public class MainJFrame extends javax.swing.JFrame {
 
         jlCompanyLogo.setText("CompanyLogo");
 
+        jlCompanyWebsite.setFont(new java.awt.Font("sansserif", 0, 24)); // NOI18N
         jlCompanyWebsite.setText("Website");
 
         jbLogin.setText("Press to login!");
@@ -139,7 +167,7 @@ public class MainJFrame extends javax.swing.JFrame {
                         .addGap(25, 25, 25)
                         .addComponent(jlCompanyLogo)
                         .addGap(18, 18, 18)
-                        .addComponent(jlCompanyWebsite))
+                        .addComponent(jlCompanyWebsite, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(419, 419, 419)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -155,10 +183,10 @@ public class MainJFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jlCompanyLogo)
-                    .addComponent(jlCompanyWebsite))
-                .addGap(41, 41, 41)
+                    .addComponent(jlCompanyWebsite, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane2)
                     .addComponent(jspSplitPane))
@@ -236,13 +264,18 @@ public class MainJFrame extends javax.swing.JFrame {
                 exerciseNames.append(exercicis.get(i).getDescripcio());
             }
 
+            // Get with id column and then hide it to precisely select workouts
             workoutTableModel.addRow(new Object[] {
+                workout.getId(),
                 workout.getForDate(),
                 exercicis.size(),
                 exerciseNames.toString(),
                 workout.getComments()
             });
         }
+        jTable1.getColumnModel().getColumn(0).setMinWidth(0);
+        jTable1.getColumnModel().getColumn(0).setMaxWidth(0);
+        jTable1.getColumnModel().getColumn(0).setWidth(0);
     } 
     
     
@@ -387,26 +420,17 @@ public class MainJFrame extends javax.swing.JFrame {
     
     private void showExercisesForWorkout(int selectedRow) {
         exercicisModel.clear();
-        
-        // Get the workout date from the selected row
-        String workoutDate = (String) workoutTableModel.getValueAt(selectedRow, 0);
-        
-        // Get the currently selected user
-        Usuari selectedUser = jlUsers.getSelectedValue();
-        if (selectedUser != null) {
-            // Find the matching workout
-            ArrayList<Workout> workouts = DataAccess.getWorkoutsPerUser(selectedUser);
-            for (Workout workout : workouts) {
-                if (workout.getForDate().equals(workoutDate)) {
-                    // Get and display exercises for this workout
-                    ArrayList<Exercici> exercicis = DataAccess.getExercicisPerWorkout(workout);
-                    for (Exercici exercici : exercicis) {
-                        exercicisModel.addElement(exercici);
-                    }
-                    jScrollPane2.setVisible(true);
-                    break;
-                }
+
+        if(selectedRow >= 0) {
+            int workoutId = (Integer) workoutTableModel.getValueAt(selectedRow, 0);
+            Workout workout = new Workout();
+            workout.setId(workoutId);
+
+            ArrayList<Exercici> exercicis = DataAccess.getExercicisPerWorkout(workout);
+            for (Exercici exercici : exercicis) {
+                exercicisModel.addElement(exercici);
             }
+            jScrollPane2.setVisible(true);
         }
     }
 
