@@ -239,6 +239,7 @@ public class DataAccess {
     }
 
     private static int insertExerciciPerWorkout(int wId, Exercici e) {
+
         String sql = "INSERT INTO dbo.ExercicisWorkouts (IdWorkout, IdExercici)"
                 + " VALUES (?,?)";
         try (Connection conn = getConnection(); PreparedStatement insertStatement = conn.prepareStatement(sql)) {
@@ -251,17 +252,49 @@ public class DataAccess {
         }
         return 0;
     }
-    
-    public static void deleteWorkout(int workoutId) {
-        String sql = "DELETE FROM dbo.ExercicisWorkouts WHERE IdWorkout=?; " +
-                     "DELETE FROM dbo.Workouts WHERE Id=?";
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, workoutId);
-            stmt.setInt(2, workoutId);
-            stmt.executeUpdate();
+
+    public static void deleteWorkout(int workoutId) throws SQLException {
+        String sqlDeleteReviews = "DELETE r FROM Review r " +
+                                 "INNER JOIN Intents i ON r.IdIntent = i.Id " +
+                                 "INNER JOIN ExercicisWorkouts ew ON i.IdExerciciWorkout = ew.Id " +
+                                 "WHERE ew.IdWorkout = ?";
+
+        String sqlDeleteIntents = "DELETE i FROM Intents i " +
+                                 "INNER JOIN ExercicisWorkouts ew ON i.IdExerciciWorkout = ew.Id " +
+                                 "WHERE ew.IdWorkout = ?";
+
+        String sqlDeleteExercicisWorkouts = "DELETE FROM ExercicisWorkouts WHERE IdWorkout = ?";
+        String sqlDeleteWorkout = "DELETE FROM Workouts WHERE Id = ?";
+        Connection conn = getConnection();
+
+        try (
+             PreparedStatement stmtReviews = conn.prepareStatement(sqlDeleteReviews);
+             PreparedStatement stmtIntents = conn.prepareStatement(sqlDeleteIntents);
+             PreparedStatement stmtExercicis = conn.prepareStatement(sqlDeleteExercicisWorkouts);
+             PreparedStatement stmtWorkout = conn.prepareStatement(sqlDeleteWorkout)) {
+
+            conn.setAutoCommit(false);
+
+            // 1. Delete Reviews
+            stmtReviews.setInt(1, workoutId);
+            stmtReviews.executeUpdate();
+
+            // 2. Delete Intents
+            stmtIntents.setInt(1, workoutId);
+            stmtIntents.executeUpdate();
+
+            // 3. Delete ExercicisWorkouts
+            stmtExercicis.setInt(1, workoutId);
+            stmtExercicis.executeUpdate();
+
+            // 4. Delete Workout
+            stmtWorkout.setInt(1, workoutId);
+            stmtWorkout.executeUpdate();
+
+            conn.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
+            conn.rollback();
+            throw e;
         }
     }
 }
