@@ -12,30 +12,38 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 /**
+ * Provides database access methods for retrieving and manipulating data
+ * within the XTRACISE corporate fitness management system.
  *
  * @author Mike
  */
 public class DataAccess {
 
+    /**
+     * Establishes and returns a Connection to the SQL Server database. 
+     * Uses parameters from the application's properties file.
+     *
+     * @return A Connection object to the configured database.
+     */
     private static Connection getConnection() {
         Connection connection = null;
         Properties properties = new Properties();
         try {
             properties.load(DataAccess.class.getClassLoader().getResourceAsStream("properties/application.properties"));
-            // connection = DriverManager.getConnection(properties.getProperty("connectionUrl"));
-            // String connectionUrl = "jdbc:sqlserver://localhost:1433;database=simulapdb;user=sa;password=Pwd1234.;encrypt=false;loginTimeout=10;";
-            // String connectionUrl = "jdbc:sqlserver://mssql.k3s.rnet:1433;databaseName=simulabdb;trustServerCertificate=true;user=sa;password=Pwd1234.;";
-            // String connectionUrlAzure = "jdbc:sqlserver://simulapdbserver.database.windows.net:1433;database=simulapdb;user=simulapdbadmin@simulapdbserver;password=Pwd1234.;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
             String connectionStringAzureSQLServer = "jdbc:sqlserver://simulapsqlserver.database.windows.net:1433;database=simulapdb25;user=simulapdbadmin@simulapsqlserver;password=Pwd1234.;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
             connection = DriverManager.getConnection(connectionStringAzureSQLServer);
-            //connection = DriverManager.getConnection(connectionUrlAzure);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return connection;
     }
 
+    /**
+     * Retrieves a user record from the database based on email.
+     *
+     * @param email The user's email address.
+     * @return      A Usuari object corresponding to the matching record.
+     */
     public static Usuari getUser(String email) {
         Usuari user = null;
         String sql = "SELECT * FROM Usuaris WHERE Email = ?";
@@ -56,14 +64,16 @@ public class DataAccess {
         return user;
     }
 
+    /**
+     * Retrieves all users who are not instructors from the Usuaris table.
+     *
+     * @return An ArrayList of Usuari objects.
+     */
     public static ArrayList<Usuari> getAllUsers() {
         ArrayList<Usuari> usuaris = new ArrayList<>();
         String sql = "SELECT * FROM Usuaris WHERE Instructor=0";
         try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
-
             ResultSet resultSet = selectStatement.executeQuery();
-            
-
             while (resultSet.next()) {
                 Usuari user = new Usuari();
                 user.setId(resultSet.getInt("Id"));
@@ -79,13 +89,18 @@ public class DataAccess {
         return usuaris;
     }
 
+    /**
+     * Retrieves all users assigned to a given instructor.
+     *
+     * @param idInstructor The instructor's database ID.
+     * @return             An ArrayList of Usuari objects.
+     */
     public static ArrayList<Usuari> getAllUsersByInstructor(int idInstructor) {
         ArrayList<Usuari> usuaris = new ArrayList<>();
         String sql = "SELECT * FROM Usuaris WHERE AssignedInstructor=?";
         try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
             selectStatement.setInt(1, idInstructor);
             ResultSet resultSet = selectStatement.executeQuery();
-
             while (resultSet.next()) {
                 Usuari user = new Usuari();
                 user.setId(resultSet.getInt("Id"));
@@ -101,6 +116,12 @@ public class DataAccess {
         return usuaris;
     }
 
+    /**
+     * Retrieves all workouts for a specified user.
+     *
+     * @param user The user whose workouts are requested.
+     * @return     An ArrayList of Workout objects for the given user.
+     */
     public static ArrayList<Workout> getWorkoutsPerUser(Usuari user) {
         ArrayList<Workout> workouts = new ArrayList<>();
         String sql = "SELECT Workouts.Id, Workouts.ForDate, Workouts.UserId, Workouts.Comments"
@@ -110,7 +131,6 @@ public class DataAccess {
         try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
             selectStatement.setInt(1, user.getId());
             ResultSet resultSet = selectStatement.executeQuery();
-
             while (resultSet.next()) {
                 Workout workout = new Workout();
                 workout.setId(resultSet.getInt("Id"));
@@ -123,9 +143,14 @@ public class DataAccess {
             e.printStackTrace();
         }
         return workouts;
-
     }
 
+    /**
+     * Retrieves all exercises associated with a given workout.
+     *
+     * @param workout The workout whose exercises are requested.
+     * @return        An ArrayList of Exercici objects.
+     */
     public static ArrayList<Exercici> getExercicisPerWorkout(Workout workout) {
         ArrayList<Exercici> exercicis = new ArrayList<>();
         String sql = "SELECT ExercicisWorkouts.IdExercici,"
@@ -135,7 +160,6 @@ public class DataAccess {
         try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
             selectStatement.setInt(1, workout.getId());
             ResultSet resultSet = selectStatement.executeQuery();
-
             while (resultSet.next()) {
                 Exercici exercici = new Exercici();
                 exercici.setId(resultSet.getInt("IdExercici"));
@@ -151,14 +175,17 @@ public class DataAccess {
         return exercicis;
     }
 
+    /**
+     * Retrieves all exercises available in the system.
+     *
+     * @return An ArrayList of Exercici objects.
+     */
     public static ArrayList<Exercici> getAllExercicis() {
         ArrayList<Exercici> exercicis = new ArrayList<>();
         String sql = "SELECT Id, Exercicis.NomExercici, Exercicis.Descripcio, Exercicis.DemoFoto"
                 + " FROM Exercicis";
         try (Connection connection = getConnection(); PreparedStatement selectStatement = connection.prepareStatement(sql);) {
-
             ResultSet resultSet = selectStatement.executeQuery();
-
             while (resultSet.next()) {
                 Exercici exercici = new Exercici();
                 exercici.setId(resultSet.getInt("Id"));
@@ -174,6 +201,12 @@ public class DataAccess {
         return exercicis;
     }
 
+    /**
+     * Registers a new user in the database.
+     *
+     * @param u The Usuari object containing necessary user information.
+     * @return  The generated primary key (ID) for the new user record.
+     */
     public static int registerUser(Usuari u) {
         String sql = "INSERT INTO dbo.Usuaris (Nom, Email, PasswordHash, Instructor)"
                 + " VALUES (?,?,?,?)"
@@ -192,18 +225,30 @@ public class DataAccess {
         return 0;
     }
 
+    /**
+     * Inserts a workout and its exercises into the database.
+     *
+     * @param w         The Workout object to insert.
+     * @param exercicis The list of exercises associated with the workout.
+     */
     public static void insertWorkout(Workout w, ArrayList<Exercici> exercicis) {
         // The following should be done in a SQL transaction
         int newWorkoutId = insertToWorkoutTable(w);
         insertExercisesPerWorkout(newWorkoutId, exercicis);
     }
 
+    /**
+     * Inserts a Workout record into the database and returns its generated key.
+     *
+     * @param w The Workout object to be persisted.
+     * @return  The new workout's ID.
+     */
     private static int insertToWorkoutTable(Workout w) {
         String sql = "INSERT INTO dbo.Workouts (ForDate, UserId, Comments)"
                 + " VALUES (?,?,?)";
         try (Connection conn = getConnection();
-                PreparedStatement insertStatement = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-                ) {
+             PreparedStatement insertStatement = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+        ) {
             insertStatement.setString(1, w.getForDate());
             insertStatement.setInt(2, w.getIdUsuari());
             insertStatement.setString(3, w.getComments());
@@ -213,7 +258,6 @@ public class DataAccess {
             if (affectedRows > 0) {
                 // Retrieve the generated keys (identity value)
                 ResultSet resultSet = insertStatement.getGeneratedKeys();
-
                 // Check if a key was generated
                 if (resultSet.next()) {
                     // Get the last inserted identity value
@@ -221,13 +265,19 @@ public class DataAccess {
                     return lastInsertedId;
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
     }
 
+    /**
+     * Inserts multiple exercises for a given workout.
+     *
+     * @param wId       The ID of the workout.
+     * @param exercicis The list of exercises to be assigned to the workout.
+     * @return          Number of exercises inserted, or 0 on failure.
+     */
     private static int insertExercisesPerWorkout(int wId, ArrayList<Exercici> exercicis) {
         for(Exercici e: exercicis) {
             int rowsAffected = insertExerciciPerWorkout(wId, e);
@@ -238,8 +288,14 @@ public class DataAccess {
         return exercicis.size();
     }
 
+    /**
+     * Inserts a single exercise-workout relationship record.
+     *
+     * @param wId The ID of the workout.
+     * @param e   The Exercici object to be linked with the workout.
+     * @return    Number of rows affected by the insert operation.
+     */
     private static int insertExerciciPerWorkout(int wId, Exercici e) {
-
         String sql = "INSERT INTO dbo.ExercicisWorkouts (IdWorkout, IdExercici)"
                 + " VALUES (?,?)";
         try (Connection conn = getConnection(); PreparedStatement insertStatement = conn.prepareStatement(sql)) {
@@ -253,6 +309,12 @@ public class DataAccess {
         return 0;
     }
 
+    /**
+     * Deletes a workout and its associated records from the database.
+     *
+     * @param workoutId The ID of the workout to delete.
+     * @throws SQLException if any error occurs during the transaction.
+     */
     public static void deleteWorkout(int workoutId) throws SQLException {
         String sqlDeleteReviews = "DELETE r FROM Review r " +
                                  "INNER JOIN Intents i ON r.IdIntent = i.Id " +

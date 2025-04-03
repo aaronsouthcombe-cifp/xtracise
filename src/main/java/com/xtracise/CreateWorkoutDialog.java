@@ -9,13 +9,29 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * This dialog allows instructors to create new workouts for a specific user, 
+ * selecting date and exercises within a corporate environment.
+ */
 public class CreateWorkoutDialog extends javax.swing.JDialog {
+    /** The user for whom the workout is being created. */
     private Usuari user;
+    /** Tracks whether the workout creation was successful. */
     private boolean successful = false;
+    /** Displays all available exercises for selection. */
     private JList<Exercici> jlExercicis;
+    /** The text field capturing the workout date. */
     private JTextField jtfDate;
+    /** The button that triggers saving the workout. */
     private JButton jbSave;
 
+    /**
+     * Constructs the dialog for creating a new workout, assigning a target user.
+     *
+     * @param parent The parent JFrame invoking this dialog.
+     * @param modal  Whether this dialog should be modal.
+     * @param user   The user to associate the new workout with.
+     */
     public CreateWorkoutDialog(java.awt.Frame parent, boolean modal, Usuari user) {
         super(parent, modal);
         this.user = user;
@@ -23,6 +39,9 @@ public class CreateWorkoutDialog extends javax.swing.JDialog {
         setupData();
     }
 
+    /**
+     * Initializes the UI components and layout for creating a workout.
+     */
     private void initComponents() {
         setLayout(new MigLayout("fill,insets 20", "[grow]", "[][grow][]"));
         
@@ -51,6 +70,9 @@ public class CreateWorkoutDialog extends javax.swing.JDialog {
         pack();
     }
 
+    /**
+     * Prepares the form fields with default data and fetches all exercises from the database.
+     */
     private void setupData() {
         jtfDate.setText(java.time.LocalDate.now().toString());
         DefaultListModel<Exercici> model = new DefaultListModel<>();
@@ -58,6 +80,11 @@ public class CreateWorkoutDialog extends javax.swing.JDialog {
         jlExercicis.setModel(model);
     }
 
+    /**
+     * Saves the newly created workout with selected exercises to the database.
+     *
+     * @param evt The event triggered by clicking the "Save Workout" button.
+     */
     private void jbSaveActionPerformed(java.awt.event.ActionEvent evt) {
         if (jlExercicis.getSelectedValuesList().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please select at least one exercise", 
@@ -76,6 +103,13 @@ public class CreateWorkoutDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Save Failed", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
-    public boolean isSuccessful() { return successful; }
+
+    /**
+     * Indicates whether the workout creation was successful.
+     *
+     * @return true if the workout was created successfully; false otherwise.
+     */
+    public boolean isSuccessful() { 
+        return successful; 
+    }
 }
